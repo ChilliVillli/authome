@@ -8,9 +8,9 @@ def writer(parametr):
     page = book.add_worksheet('авто')
 
 
-    row = 0
+    row = 1
     column = 2
-    count = 0
+
 
     page.write('A1', 'Бренд')
     page.write('B1', 'Название')
@@ -31,7 +31,6 @@ def writer(parametr):
     page.write('Q1', 'Фото')
     page.write('R1', 'Цена')
 
-    # row += 1
 
     # page.write(f'P{row + 1}', url_work)
     # page.write(f'B{row + 1}', carname)
@@ -42,9 +41,8 @@ def writer(parametr):
     for item in parametr():
 
         page.write(row, column, item)
-        print(row, column)
-        column += 1
 
+        column += 1
 
 
     book.close()
