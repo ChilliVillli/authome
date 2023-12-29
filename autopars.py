@@ -1,37 +1,78 @@
 from time import sleep
 import requests
 from bs4 import BeautifulSoup
+from selenium import webdriver
 from fake_useragent import UserAgent
 import xlsxwriter
 
 
 ua = UserAgent()
 headers = {'User-agent': ua.random}
+
 # headers = {'User-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36'}
 
+
 # list_auto_haval = ['hafuf7', 'hafuh6', 'hafuh9', 'hafudagou', 'hafum6',
-        #              'hafuh5jingdian', 'hafuh5', 'hafuh2','hafuh6coupe', 'hafuf7x', 'hafuh3',
-        #              'hafuh4', 'hafuh8', 'hafuh6s', 'hafuh6xinnengyuan', 'hafuchitu', 'hafukugou', 'hafushenshou',
-        #              'hafuxiaolong', 'hafuerdaidagou', 'hafuerdaidagouxinnengyuan', 'hafuxiaolongmax' , 'hafuchulian',
-        #              'hafuh1', 'hafuh2s', 'hafuf5']
+#                      'hafuh5jingdian', 'hafuh5', 'hafuh2','hafuh6coupe', 'hafuf7x', 'hafuh3',
+#                      'hafuh4', 'hafuh8', 'hafuh6s', 'hafuh6xinnengyuan', 'hafuchitu', 'hafukugou', 'hafushenshou',
+#                      'hafuxiaolong', 'hafuerdaidagou', 'hafuerdaidagouxinnengyuan', 'hafuxiaolongmax' , 'hafuchulian',
+#                      'hafuh1', 'hafuh2s', 'hafuf5']
 
 # list_changan = ['benbenev', 'changanlumin', 'benben', 'benbenmini', 'changanbenbenestar', 'changancx20', 'yuexiangv5']
-                #, 'yuexiangv3', 'yuexiang', 'yidong', 'changanuniv', 'changanunivzhidianidd', 'ruichengcc', 'ruichengplus',
-                # 'yida', 'yidongdt', 'yidongxinnengyuan', 'changancx30', 'yidongxt', 'yuexiangv7', 'ruicheng', 'ruichengcc2',
-                # 'lingxuan', 'changancs15', 'changancs35plus', 'changancs55plus', 'changancs75', 'changancs75plus', 'changancs75pluszhidianidd',
-                # 'changanunit', 'changancs85coupe', 'changanunik', 'changanunikzhidianidd', 'changancs95', 'changancs75xinnengyuan',
-                # 'changancs15ev', 'changancs35', 'changanxinnengyuanepro', 'changancs55', 'changanlantuozhe', 'fengjingfangche']
-
+#                 , 'yuexiangv3', 'yuexiang', 'yidong', 'changanuniv', 'changanunivzhidianidd', 'ruichengcc', 'ruichengplus',
+#                 'yida', 'yidongdt', 'yidongxinnengyuan', 'changancx30', 'yidongxt', 'yuexiangv7', 'ruicheng', 'ruichengcc2',
+#                 'lingxuan', 'changancs15', 'changancs35plus', 'changancs55plus', 'changancs75', 'changancs75plus', 'changancs75pluszhidianidd',
+#                 'changanunit', 'changancs85coupe', 'changanunik', 'changanunikzhidianidd', 'changancs95', 'changancs75xinnengyuan',
+#                 'changancs15ev', 'changancs35', 'changanxinnengyuanepro', 'changancs55', 'changanlantuozhe', 'fengjingfangche']
 # list_chery = ['qiruiqq', 'qiruiqq3', 'fengyun2', 'qiruia1', 'qiruie3', 'qiyun', 'qiyun2', 'airuize5', 'airuize5gt', 'airuize5plus',
 #               'airuize8', 'airuize3', 'airuize7', 'airuize7e', 'airuizegx', 'qiruia3', 'qiruia5', 'qiruie5', 'qiyun3', 'dongfangzhizi',
 #               'ruihu3x', 'ruihu5x', 'oumengda', 'ruihu7', 'ruihu7plus', 'ruihu7plusxinnengyuan', 'ruihu8', 'ruihu8plus',
 #               'ruihu8pluskunpenge', 'ruihu8pro', 'ruihu9', 'qiruix1', 'ruihu', 'ruihu3', 'ruihu5']
+#
+# list_geely = ['xiongmao', 'xiongmaojingdian', 'jilisc3', 'jingang', 'jingangcaifu', 'jinying', 'ziyoujian', 'binrui',
+#               'dihao', 'dihaolhip', 'dihaoxinnengyuan', 'xingrui', 'xingruil', 'dihaogl', 'dihaoglxinnengyuan', 'dihaol', 'haijing',
+#               'jiligc7', 'jingdiandihao', 'yuanjing', 'borui', 'boruixinnengyuan', 'jiliec8', 'jiaji', 'jiajixinnengyuan',
+#               'yingluntx4', 'binyue', 'jiliicon', 'boyue', 'boyuel', 'dihaos', 'xingyuel', 'xingyuelzengchengdiandongban',
+#               'yuanjingx6', 'haoyuel', 'binyuexinnengyuan', 'yuanjingx1', 'yuanjingx3', 'dihaogs', 'dihaogse', 'jiligx7',
+#               'jilisx7', 'xingyue', 'xingyues', 'yuanjings1', 'haoqingsuv', 'haoyue']
+#
+# list_jike = ['jikex', 'jike009', 'jikex']
+#
+#
+# list_GAC_TRUMPCHI = ['yingbao', 'chuanqiga3', 'chuanqiga3sshijie', 'chuanqiga4', 'chuanqiga6', 'chuanqiga5', 'chuanqiga5xinnengyuan',
+#                      'chuanqiga8', 'chuanqim6', 'chuanqie9', 'chuanqim8', 'chuanqigs3', 'chuanqigs4', 'chuanqigs4plus', 'yingku',
+#                      'chuanqigs8', 'chuanqigs4coupe', 'chuanqigs4xinnengyuan', 'chuanqigs5super', 'chuanqigs5', 'chuanqigs7']
+#
+# list_dongfeng = ['junfenger30', 'junfenge11k', 'shuaike', 'shuaikexinnengyuan', 'yuxuan', 'mengshi', 'palasuo', 'aoding',
+#                  'mengshim50', 'yufengp16', 'ruiqi', 'ruiqi6', 'ruiqi6xinnengyuan']
+#
+# list_jietu = ['jietudasheng', 'jietudashengidm', 'jietulvxingzhe', 'jietux70', 'jietux70plus',
+#               'jietux70m', 'jietux70s', 'jietux90', 'jietux90plus', 'jietux95', 'jietux70coupe']
+#
+# list_kaiyi = ['kaiyishiyue', 'kaiyic3', 'kaiyic3r', 'kaiyie3', 'kaiyix3', 'xuanjie',
+#               'xuanjieproev', 'kaiyikunlun', 'kaiyiv3', 'kaiyix5']
+#
+# list_beijing = ['beijingbj40', 'beijingbj80', 'beijingbj90', 'beijingbj60', 'beijingbj20', 'beijingf40', 'beijingbj30']
+#
+# list_changcheng = ['changchengc30', 'changchengc30xinnengyuan', 'changchengc50', 'changchengm4',
+#                    'fengjun5', 'fengjun7', 'jingangpao', 'pao', 'shanhaipao', 'fengjun6']
+#
+# list_tanke = ['tanke300', 'tanke500', 'tanke500xinnengyuan', 'tanke400xinnengyuan']
+#
+# list_ruilanqiche = ['ruilanqichex3pro', 'fengye80v', 'fengye30x', 'fengye60s']
+
+
+list_changcheng = ['fengye60s']
+
+
 
 book = xlsxwriter.Workbook(r"C:\Users\Boris\Desktop\autohome\auto.xlsx")
-page = book.add_worksheet('chery')
+page = book.add_worksheet('livan')
 
 row = 1
 column = 2
+# count = 0
+count_two = 0
 
 page.write('A1', 'Бренд')
 page.set_column("A:A", 10)
@@ -73,112 +114,132 @@ page.set_column("T:T", 15)
 page.write('U1', 'Цена')
 
 
-# for name in list_changan:
+# driver = webdriver.Chrome()
+# driver.get('https://www.che168.com/china/qirui/ruihu3x/')
 
-url = f"https://www.che168.com/china/qirui/airuizegx/"
-response_page = requests.get(url, headers=headers) #, headers=headers
-soup_page = BeautifulSoup(response_page.text, 'lxml')
-check = soup_page.find_all('li', class_='cards-li list-photo-li')
-print(len(check))
+# url = f"https://www.che168.com/china/qirui/{name}/"
+# response_page = requests.Session().get(url, headers=headers)
+# soup_page = BeautifulSoup(response_page.text, 'lxml')
+# check = soup_page.find_all('li', class_='cards-li list-photo-li')
+# print(len(check))
 
-    # pagination = soup_page.find('div', {'id' :'listpagination'}).find_all('a')
-    # pag = int(pagination[-2].text) + 1
+# pagination = soup_page.find('div', {'id' :'listpagination'}).find_all('a')
+# pag = int(pagination[-2].text) + 1
 
-    # count = 0
-    #
-    # if len(check) == 0:
-    #     continue
+# count = 0
+#
+# if len(check) == 0:
+#     continue
 
-    # book = xlsxwriter.Workbook(r"C:\Users\Boris\Desktop\autohome\auto.xlsx")
+# book = xlsxwriter.Workbook(r"C:\Users\Boris\Desktop\autohome\auto.xlsx")
 
-    # page = book.add_worksheet(f'{name}')
-    #
-    # row = 1
-    # column = 2
-    #
-    # page.write('A1', 'Бренд')
-    # page.set_column("A:A", 10)
-    # page.write('B1', 'Название')
-    # page.set_column("B:B", 40)
-    # page.write('C1', 'Артикул')
-    # page.write('D1', 'Год выпуска')
-    # page.set_column("D:D", 11)
-    # page.write('L1', 'Пробег')
-    # page.set_column("L:L", 10)
-    # page.write('I1', 'Коробка передач')
-    # page.set_column("I:I", 15)
-    # page.write('Q1', 'Запас хода на электричестве')
-    # page.set_column("Q:Q", 35)
-    # page.write('G1', 'Объем двигателя (л)')
-    # page.set_column("G:G", 20)
-    # page.write('E1', 'Город нахождения')
-    # page.set_column("E:E", 18)
-    # page.write('J1', 'Привод')
-    # page.set_column("J:J", 10)
-    # page.write('P1', 'Емкость батареи')
-    # page.set_column("P:P", 20)
-    # page.write('F1', 'Тип топлива')
-    # page.set_column("F:F", 12)
-    # page.write('H1', 'Двигатель')
-    # page.set_column("H:H", 15)
-    # page.write('M1', 'Класс автомобиля')
-    # page.set_column("M:M", 15)
-    # page.write('K1', 'Цвет машины')
-    # page.set_column("K:K", 15)
-    # page.write('N1', 'Марка топлива')
-    # page.set_column("N:N", 15)
-    # page.write('O1', 'Поставщик')
-    # page.set_column("O:O", 10)
-    # page.write('R1', 'Ссылка')
-    # page.write('S1', 'Фото')
-    # page.write('T1', 'Фото остальное')
-    # page.set_column("T:T", 15)
-    # page.write('U1', 'Цена')
+# page = book.add_worksheet(f'{name}')
+#
+# row = 1
+# column = 2
+#
+# page.write('A1', 'Бренд')
+# page.set_column("A:A", 10)
+# page.write('B1', 'Название')
+# page.set_column("B:B", 40)
+# page.write('C1', 'Артикул')
+# page.write('D1', 'Год выпуска')
+# page.set_column("D:D", 11)
+# page.write('L1', 'Пробег')
+# page.set_column("L:L", 10)
+# page.write('I1', 'Коробка передач')
+# page.set_column("I:I", 15)
+# page.write('Q1', 'Запас хода на электричестве')
+# page.set_column("Q:Q", 35)
+# page.write('G1', 'Объем двигателя (л)')
+# page.set_column("G:G", 20)
+# page.write('E1', 'Город нахождения')
+# page.set_column("E:E", 18)
+# page.write('J1', 'Привод')
+# page.set_column("J:J", 10)
+# page.write('P1', 'Емкость батареи')
+# page.set_column("P:P", 20)
+# page.write('F1', 'Тип топлива')
+# page.set_column("F:F", 12)
+# page.write('H1', 'Двигатель')
+# page.set_column("H:H", 15)
+# page.write('M1', 'Класс автомобиля')
+# page.set_column("M:M", 15)
+# page.write('K1', 'Цвет машины')
+# page.set_column("K:K", 15)
+# page.write('N1', 'Марка топлива')
+# page.set_column("N:N", 15)
+# page.write('O1', 'Поставщик')
+# page.set_column("O:O", 10)
+# page.write('R1', 'Ссылка')
+# page.write('S1', 'Фото')
+# page.write('T1', 'Фото остальное')
+# page.set_column("T:T", 15)
+# page.write('U1', 'Цена')
 
 list_url = []
 
 
 def get_url():
 
-    for num in range(1, 6):
 
-        url_cars = f'https://www.che168.com/china/qirui/airuizegx/a0_0msdgscncgpi1ltocsp{num}exx0/'
-        response = requests.get(url_cars, headers=headers)
+
+    for name in list_changcheng:
         # sleep(3)
-        soup = BeautifulSoup(response.text, 'lxml')
-        auto = soup.find_all('li', class_='cards-li list-photo-li')
 
-        for card in auto:
+        d = {2014: count_two, 2015: count_two, 2016: count_two, 2017: count_two, 2018: count_two,
+             2019: count_two, 2020: count_two, 2021: count_two, 2022: count_two, 2023: count_two, 2024: count_two}
 
-            try:
-                dealerid = card['dealerid']
-                infoid = card['infoid']
-                carname = card['carname']
-                price = (float(card['price']) * float(10000.00))
-            except KeyError:
-                continue
+        for num in range(1, 3):
+            # url_cars = f'https://www.che168.com/china/a0_0msdgscncgpi1ltocsp{num}exx0/?kw=wey'
+            url_cars = f'https://www.che168.com/china/ruilanqiche/{name}/a0_0msdgscncgpi1ltocsp{num}exx0/'
+            response = requests.Session().get(url_cars, headers=headers)
+            soup = BeautifulSoup(response.text, 'lxml')
+            auto = soup.find_all('li', class_='cards-li list-photo-li')
+            print(len(auto))
 
-            url_work = f'https://www.che168.com/dealer/{dealerid}/{infoid}.html'
+            for card in auto:
 
-            if url_work in list_url:
-                continue
+                try:
+                    dealerid = card['dealerid']
+                    infoid = card['infoid']
+                    carname = card['carname']
+                    price = (float(card['price']) * float(10000.00))
+                except KeyError:
+                    continue
 
-            list_url.append(url_work)
+                year = ''.join(c if c.isdigit() else ' ' for c in carname).split()
+                year = [int(y) for y in year]
+                year = max(year)
 
-            page.write(f'R{row + 1}', url_work)
-            page.write(f'A{row + 1}', 'Chery')
-            page.write(f'B{row + 1}', carname)
-            page.write(f'U{row + 1}', price)
+                url_work = f'https://www.che168.com/dealer/{dealerid}/{infoid}.html'
 
-            yield url_work
+                if year < 2014:
+                    continue
+
+                else:
+                    d[year] += 1
+
+                if d[year] >= 3:
+                    continue
+
+                if url_work in list_url:
+                    continue
+
+                page.write(f'R{row + 1}', url_work)
+                page.write(f'A{row + 1}', 'Livan')
+                page.write(f'B{row + 1}', carname)
+                page.write(f'U{row + 1}', price)
+
+                yield url_work
 
 
 def array():
-    global row, column, page, check
+    global row, column, page, check, count
 
     for url_work in get_url():
         b = ''
-        response = requests.get(url_work, headers=headers)
+        response = requests.Session().get(url_work, headers=headers)
         sleep(1)
         card_soup = BeautifulSoup(response.text, 'lxml')
 
@@ -196,7 +257,7 @@ def array():
 
 
         for pc in photo_car:
-
+            sleep(1)
             b += f"https:{pc.find('img').get('data-original')};"
         page.write_string(f'T{row + 1}', b)
 
@@ -204,8 +265,10 @@ def array():
 
         row += 1
         column = 2
-
+        # count += 1
         print(row)
+
+        list_url.append(url_work)
 
         for j in auto_card:
 
@@ -301,7 +364,7 @@ def array():
                     column += 1
                     continue
 
-        if row == 11 or (len(check) - 1) == row:
+        if row == 12:
             # book.close()
             print("end")
             # count = 0
@@ -312,7 +375,7 @@ array()
 
 book.close()
 print("finish")
-
+# driver.close()
 
 
 
