@@ -2,12 +2,16 @@ from time import sleep
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from selenium.webdriver.common.by import By
 from fake_useragent import UserAgent
 import xlsxwriter
+from googletrans import Translator
 
 
 ua = UserAgent()
 headers = {'User-agent': ua.random}
+translator = Translator()
+
 
 # headers = {'User-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36'}
 
@@ -24,6 +28,7 @@ headers = {'User-agent': ua.random}
 #                 'lingxuan', 'changancs15', 'changancs35plus', 'changancs55plus', 'changancs75', 'changancs75plus', 'changancs75pluszhidianidd',
 #                 'changanunit', 'changancs85coupe', 'changanunik', 'changanunikzhidianidd', 'changancs95', 'changancs75xinnengyuan',
 #                 'changancs15ev', 'changancs35', 'changanxinnengyuanepro', 'changancs55', 'changanlantuozhe', 'fengjingfangche']
+
 # list_chery = ['qiruiqq', 'qiruiqq3', 'fengyun2', 'qiruia1', 'qiruie3', 'qiyun', 'qiyun2', 'airuize5', 'airuize5gt', 'airuize5plus',
 #               'airuize8', 'airuize3', 'airuize7', 'airuize7e', 'airuizegx', 'qiruia3', 'qiruia5', 'qiruie5', 'qiyun3', 'dongfangzhizi',
 #               'ruihu3x', 'ruihu5x', 'oumengda', 'ruihu7', 'ruihu7plus', 'ruihu7plusxinnengyuan', 'ruihu8', 'ruihu8plus',
@@ -62,7 +67,7 @@ headers = {'User-agent': ua.random}
 # list_ruilanqiche = ['ruilanqichex3pro', 'fengye80v', 'fengye30x', 'fengye60s']
 
 
-list_changcheng = ['fengye60s']
+list_changcheng = ['changanlumin', 'ruichengcc'] #, 'yuexiang', 'yidong', 'changanuniv', 'changanunivzhidianidd', 'ruichengcc', 'ruichengplus']
 
 
 
@@ -71,7 +76,6 @@ page = book.add_worksheet('livan')
 
 row = 1
 column = 2
-# count = 0
 count_two = 0
 
 page.write('A1', 'Бренд')
@@ -81,101 +85,40 @@ page.set_column("B:B", 40)
 page.write('C1', 'Артикул')
 page.write('D1', 'Год выпуска')
 page.set_column("D:D", 11)
-page.write('L1', 'Пробег')
-page.set_column("L:L", 10)
-page.write('I1', 'Коробка передач')
-page.set_column("I:I", 15)
-page.write('Q1', 'Запас хода на электричестве')
-page.set_column("Q:Q", 35)
-page.write('G1', 'Объем двигателя (л)')
-page.set_column("G:G", 20)
 page.write('E1', 'Город нахождения')
 page.set_column("E:E", 18)
-page.write('J1', 'Привод')
-page.set_column("J:J", 10)
-page.write('P1', 'Емкость батареи')
-page.set_column("P:P", 20)
-page.write('F1', 'Тип топлива')
+page.write('F1', 'Тип двигателя')
 page.set_column("F:F", 12)
+page.write('G1', 'Объем двигателя (л)')
+page.set_column("G:G", 20)
 page.write('H1', 'Двигатель')
 page.set_column("H:H", 15)
-page.write('M1', 'Класс автомобиля')
-page.set_column("M:M", 15)
-page.write('K1', 'Цвет машины')
-page.set_column("K:K", 15)
-page.write('N1', 'Марка топлива')
+page.write('I1', 'Мощность двигателя')
+page.set_column("I:I", 15)
+page.write('J1', 'Коробка передач')
+page.set_column("J:J", 15)
+page.write('K1', 'Привод')
+page.set_column("K:K", 10)
+page.write('L1', 'Цвет машины')
+page.set_column("L:L", 15)
+page.write('M1', 'Пробег')
+page.set_column("M:M", 10)
+page.write('N1', 'Класс автомобиля')
 page.set_column("N:N", 15)
-page.write('O1', 'Поставщик')
-page.set_column("O:O", 10)
-page.write('R1', 'Ссылка')
-page.write('S1', 'Фото')
-page.write('T1', 'Фото остальное')
+page.write('O1', 'Марка топлива')
+page.set_column("O:O", 15)
+page.write('P1', 'Поставщик')
+page.set_column("P:P", 10)
+page.write('Q1', 'Емкость батареи')
+page.set_column("Q:Q", 20)
+page.write('R1', 'Запас хода на электричестве')
+page.set_column("R:R", 35)
+page.write('S1', 'Ссылка')
+page.write('T1', 'Фото')
+page.write('U1', 'Фото остальное')
 page.set_column("T:T", 15)
-page.write('U1', 'Цена')
+page.write('V1', 'Цена')
 
-
-# driver = webdriver.Chrome()
-# driver.get('https://www.che168.com/china/qirui/ruihu3x/')
-
-# url = f"https://www.che168.com/china/qirui/{name}/"
-# response_page = requests.Session().get(url, headers=headers)
-# soup_page = BeautifulSoup(response_page.text, 'lxml')
-# check = soup_page.find_all('li', class_='cards-li list-photo-li')
-# print(len(check))
-
-# pagination = soup_page.find('div', {'id' :'listpagination'}).find_all('a')
-# pag = int(pagination[-2].text) + 1
-
-# count = 0
-#
-# if len(check) == 0:
-#     continue
-
-# book = xlsxwriter.Workbook(r"C:\Users\Boris\Desktop\autohome\auto.xlsx")
-
-# page = book.add_worksheet(f'{name}')
-#
-# row = 1
-# column = 2
-#
-# page.write('A1', 'Бренд')
-# page.set_column("A:A", 10)
-# page.write('B1', 'Название')
-# page.set_column("B:B", 40)
-# page.write('C1', 'Артикул')
-# page.write('D1', 'Год выпуска')
-# page.set_column("D:D", 11)
-# page.write('L1', 'Пробег')
-# page.set_column("L:L", 10)
-# page.write('I1', 'Коробка передач')
-# page.set_column("I:I", 15)
-# page.write('Q1', 'Запас хода на электричестве')
-# page.set_column("Q:Q", 35)
-# page.write('G1', 'Объем двигателя (л)')
-# page.set_column("G:G", 20)
-# page.write('E1', 'Город нахождения')
-# page.set_column("E:E", 18)
-# page.write('J1', 'Привод')
-# page.set_column("J:J", 10)
-# page.write('P1', 'Емкость батареи')
-# page.set_column("P:P", 20)
-# page.write('F1', 'Тип топлива')
-# page.set_column("F:F", 12)
-# page.write('H1', 'Двигатель')
-# page.set_column("H:H", 15)
-# page.write('M1', 'Класс автомобиля')
-# page.set_column("M:M", 15)
-# page.write('K1', 'Цвет машины')
-# page.set_column("K:K", 15)
-# page.write('N1', 'Марка топлива')
-# page.set_column("N:N", 15)
-# page.write('O1', 'Поставщик')
-# page.set_column("O:O", 10)
-# page.write('R1', 'Ссылка')
-# page.write('S1', 'Фото')
-# page.write('T1', 'Фото остальное')
-# page.set_column("T:T", 15)
-# page.write('U1', 'Цена')
 
 list_url = []
 
@@ -183,20 +126,22 @@ list_url = []
 def get_url():
 
 
-
     for name in list_changcheng:
         # sleep(3)
-
+        print(name)
         d = {2014: count_two, 2015: count_two, 2016: count_two, 2017: count_two, 2018: count_two,
              2019: count_two, 2020: count_two, 2021: count_two, 2022: count_two, 2023: count_two, 2024: count_two}
 
-        for num in range(1, 3):
+        for num in range(1, 2):
+
             # url_cars = f'https://www.che168.com/china/a0_0msdgscncgpi1ltocsp{num}exx0/?kw=wey'
-            url_cars = f'https://www.che168.com/china/ruilanqiche/{name}/a0_0msdgscncgpi1ltocsp{num}exx0/'
-            response = requests.Session().get(url_cars, headers=headers)
-            soup = BeautifulSoup(response.text, 'lxml')
+            url_cars = f'https://www.che168.com/china/changan/{name}/a0_0msdgscncgpi1ltocsp{num}exx0/'
+            driver = webdriver.Chrome()
+            driver.get(url_cars)
+            sleep(2)
+            # response = requests.Session().get(url_cars, headers=headers)
+            soup = BeautifulSoup(driver.page_source, 'lxml')
             auto = soup.find_all('li', class_='cards-li list-photo-li')
-            print(len(auto))
 
             for card in auto:
 
@@ -226,10 +171,10 @@ def get_url():
                 if url_work in list_url:
                     continue
 
-                page.write(f'R{row + 1}', url_work)
+                page.write(f'S{row + 1}', url_work)
                 page.write(f'A{row + 1}', 'Livan')
-                page.write(f'B{row + 1}', carname)
-                page.write(f'U{row + 1}', price)
+                page.write(f'B{row + 1}', translator.translate(carname, dest='en').text)
+                page.write(f'V{row + 1}', price)
 
                 yield url_work
 
@@ -239,19 +184,23 @@ def array():
 
     for url_work in get_url():
         b = ''
-        response = requests.Session().get(url_work, headers=headers)
-        sleep(1)
-        card_soup = BeautifulSoup(response.text, 'lxml')
+        driver_car = webdriver.Chrome()
+        driver_car.get(url_work)
+        # response = requests.Session().get(url_work, headers=headers)
+        # sleep(1)
+        # card_soup = BeautifulSoup(response.text, 'lxml')
+        card_soup = BeautifulSoup(driver_car.page_source, 'lxml')
 
         try:
-            photo_soup = BeautifulSoup(response.text, 'lxml')
+            # photo_soup = BeautifulSoup(response.text, 'lxml')
+            photo_soup = BeautifulSoup(driver_car.page_source, 'lxml')
             photo_first = photo_soup.find('a', class_='jiaodianphotoclick').find('img').get('src')
             # sleep(2)
-            page.write(f'S{row + 1}', f"https:{photo_first}")
+            page.write(f'T{row + 1}', f"https:{photo_first}")
             photo_car = photo_soup.find('div', class_='car-pic-list js-box-text').find_all('a')
             provider = card_soup.find('div', class_='merchantCard_right').find_all('span')
             pr = provider[0].text
-            page.write(f'O{row + 1}', pr.replace('                        ', ''))
+            page.write(f'P{row + 1}', pr.replace('                        ', ''))
         except AttributeError:
             continue
 
@@ -259,13 +208,12 @@ def array():
         for pc in photo_car:
             sleep(1)
             b += f"https:{pc.find('img').get('data-original')};"
-        page.write_string(f'T{row + 1}', b)
+        page.write_string(f'U{row + 1}', b)
 
         auto_card = card_soup.find_all('ul', class_='basic-item-ul')
 
         row += 1
         column = 2
-        # count += 1
         print(row)
 
         list_url.append(url_work)
@@ -284,35 +232,48 @@ def array():
                     continue
                 if '表显里程' in a:
                     """Пробег"""
-                    page.write(f"L{row}", a.replace('表显里程', ''))
+                    a = a.replace('表显里程', '')
+                    result = translator.translate(a, dest='ru').text
+                    mileage = ''.join(c if c.isdigit() else '' for c in result).split()
+                    mileage = [int(y) for y in mileage]
+                    page.write(f"M{row}", mileage[0])
                     column += 1
                     continue
                 if '变  速  箱' in a:
                     """Коробка передач"""
-                    page.write(f"I{row}", a.replace('变  速  箱', ''))
+                    a = a.replace('变  速  箱', '')
+                    result = translator.translate(a, dest='ru').text
+                    if result == 'автоматический':
+                        page.write(f"J{row}", 'АКПП')
+                    else:
+                        page.write(f"J{row}", 'МКПП')
                     column += 1
                     continue
                 if '燃料类型' in a:
-                    """Тип топлива"""
-                    page.write(f"K{row}", a.replace('燃料类型', ''))
+                    """Тип двигателя"""
+                    page.write(f"F{row}", a.replace('燃料类型', ''))
                     column += 1
                     continue
                 if 'WLTC纯电续航里程' in a:
                     """Запас хода на электричестве"""
-                    page.write(f"Q{row}", a.replace('WLTC纯电续航里程', ''))
+                    a = a.replace('WLTC纯电续航里程', '')
+                    page.write(f"R{row}", a[:-2])
                     page.write(f"F{row}", 'гибрид')
                     column += 1
                     continue
                 if 'CLTC纯电续航里程' in a:
                     """Запас хода на электричестве"""
-                    page.write(f"Q{row}", a.replace('CLTC纯电续航里程', ''))
-                    page.write(f"F{row}", 'электродвигатель')
+                    a = a.replace('CLTC纯电续航里程', '')
+                    page.write(f"R{row}", a[:-2])
+                    page.write(f"F{row}", 'Электродвигатель')
                     column += 1
                     continue
                 if 'NEDC纯电续航里程' in a:
                     """Запас хода на электричестве"""
-                    page.write(f"Q{row}", a.replace('NEDC纯电续航里程', ''))
-                    page.write(f"F{row}", 'электродвигатель')
+                    a = a.replace('NEDC纯电续航里程', '')
+                    print(a[:-2])
+                    page.write(f"R{row}", a[:-2])
+                    page.write(f"F{row}", 'Электродвигатель')
                     column += 1
                     continue
                 if '排       量' in a:
@@ -324,51 +285,80 @@ def array():
                     continue
                 if '所  在  地' in a:
                     """Город нахождения"""
-                    page.write(f"E{row}", a.replace('所  在  地', ''))
+                    a = a.replace('所  在  地', '')
+                    result = translator.translate(a, dest='ru')
+                    page.write(f"E{row}", result.text)
                     column += 1
                     continue
                 if '发  动  机' in a:
                     """Двигатель"""
                     page.write(f"H{row}", a.replace('发  动  机', ''))
+                    a = ''.join(l if l.isdigit() else ' ' for l in a).split()
+                    if len(a) == 1:
+                        page.write(f"I{row}", a[0])
+                    else:
+                        page.write(f"I{row}", a[2])
                     column += 1
                     continue
                 if '车辆级别' in a:
                     """Класс автомобиля"""
-                    page.write(f"M{row}", a.replace('车辆级别', ''))
+                    a = a.replace('车辆级别', '')
+                    result = translator.translate(a, dest='en')
+                    page.write(f"N{row}", result.text)
                     column += 1
                     continue
                 if '车身颜色' in a:
                     """Цвет машины"""
-                    page.write(f"K{row}", a.replace('车身颜色', ''))
+                    a = a.replace('车身颜色', '')
+                    result = translator.translate(a, dest='ru').text.split('/')
+                    page.write(f"L{row}", result[0])
                     column += 1
                     continue
                 if '驱动方式' in a:
                     """Привод"""
-                    page.write(f"J{row}", a.replace('驱动方式', ''))
+                    a = a.replace('驱动方式', '')
+                    if a == '前置前驱':
+                        page.write(f"K{row}", 'Передний')
+                        continue
+                    if a == '后置后驱':
+                        page.write(f"K{row}", 'Задний')
+                        continue
+                    if a == '前置四驱':
+                        page.write(f"K{row}", 'Полный')
+                        continue
+                    if a == '前置四驱':
+                        page.write(f"K{row}", 'Полный')
+                        continue
+                    else:
+                        page.write(f"K{row}", translator.translate(a, dest='ru').text)
                     column += 1
                     continue
                 if '标准容量' in a:
                     """Емкость батареи"""
-                    page.write(f"P{row}", a.replace('标准容量', ''))
+                    a = a.replace('标准容量', '')
+                    page.write(f"Q{row}", a[:-3])
                     column += 1
                     continue
                 if '燃油标号' in a:
                     """Марка топлива, тип топлива"""
                     a = a.replace('燃油标号', '')
                     if '92号' or '95号' in a:
-                        page.write(f"N{row}", a.replace('号', ''))
-                        page.write(f"F{row}", 'бензин')
+                        page.write(f"O{row}", a.replace('号', ''))
+                        page.write(f"F{row}", 'Бензин')
                     if '0号' in a:
-                        page.write(f"N{row}", a.replace('号', ''))
-                        page.write(f"F{row}", 'дизель')
+                        page.write(f"O{row}", a.replace('号', ''))
+                        page.write(f"F{row}", 'Дизель')
                     column += 1
                     continue
 
-        if row == 12:
-            # book.close()
-            print("end")
-            # count = 0
-            break
+    driver_car.close()
+    driver_car.quit()
+
+        # if row == 12:
+        #     # book.close()
+        #     print("end")
+        #     # count = 0
+        #     break
 
 
 array()
