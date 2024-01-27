@@ -6,7 +6,7 @@ from selenium.webdriver.common.by import By
 from fake_useragent import UserAgent
 import xlsxwriter
 from googletrans import Translator
-
+from update import get_url_update
 
 ua = UserAgent()
 headers = {'User-agent': ua.random}
@@ -120,8 +120,8 @@ page.set_column("T:T", 15)
 page.write('V1', 'Цена')
 
 
-list_url = []
 
+list_url = []
 
 def get_url():
 
@@ -132,51 +132,51 @@ def get_url():
         d = {2014: count_two, 2015: count_two, 2016: count_two, 2017: count_two, 2018: count_two,
              2019: count_two, 2020: count_two, 2021: count_two, 2022: count_two, 2023: count_two, 2024: count_two}
 
-        for num in range(1, 2):
+        # for num in range(1, 2):
 
-            # url_cars = f'https://www.che168.com/china/a0_0msdgscncgpi1ltocsp{num}exx0/?kw=wey'
-            url_cars = f'https://www.che168.com/china/changan/{name}/a0_0msdgscncgpi1ltocsp{num}exx0/'
-            driver = webdriver.Chrome()
-            driver.get(url_cars)
-            sleep(2)
-            # response = requests.Session().get(url_cars, headers=headers)
-            soup = BeautifulSoup(driver.page_source, 'lxml')
-            auto = soup.find_all('li', class_='cards-li list-photo-li')
+        # url_cars = f'https://www.che168.com/china/a0_0msdgscncgpi1ltocsp{num}exx0/?kw=wey'
+        url_cars = f'https://www.che168.com/china/changan/{name}/a0_0msdgscncgpi1ltocsp1exx0/'
+        driver = webdriver.Chrome()
+        driver.get(url_cars)
+        sleep(2)
+        # response = requests.Session().get(url_cars, headers=headers)
+        soup = BeautifulSoup(driver.page_source, 'lxml')
+        auto = soup.find_all('li', class_='cards-li list-photo-li')
 
-            for card in auto:
+        for card in auto:
 
-                try:
-                    dealerid = card['dealerid']
-                    infoid = card['infoid']
-                    carname = card['carname']
-                    price = (float(card['price']) * float(10000.00))
-                except KeyError:
-                    continue
+            try:
+                dealerid = card['dealerid']
+                infoid = card['infoid']
+                carname = card['carname']
+                price = (float(card['price']) * float(10000.00))
+            except KeyError:
+                continue
 
-                year = ''.join(c if c.isdigit() else ' ' for c in carname).split()
-                year = [int(y) for y in year]
-                year = max(year)
+            year = ''.join(c if c.isdigit() else ' ' for c in carname).split()
+            year = [int(y) for y in year]
+            year = max(year)
 
-                url_work = f'https://www.che168.com/dealer/{dealerid}/{infoid}.html'
+            url_work = f'https://www.che168.com/dealer/{dealerid}/{infoid}.html'
 
-                if year < 2014:
-                    continue
+            if year < 2014:
+                continue
 
-                else:
-                    d[year] += 1
+            else:
+                d[year] += 1
 
-                if d[year] >= 3:
-                    continue
+            if d[year] >= 3:
+                continue
 
-                if url_work in list_url:
-                    continue
+            if url_work in list_url:
+                continue
 
-                page.write(f'S{row + 1}', url_work)
-                page.write(f'A{row + 1}', 'Livan')
-                page.write(f'B{row + 1}', translator.translate(carname, dest='en').text)
-                page.write(f'V{row + 1}', price)
+            page.write(f'S{row + 1}', url_work)
+            page.write(f'A{row + 1}', 'Livan')
+            page.write(f'B{row + 1}', translator.translate(carname, dest='en').text)
+            page.write(f'V{row + 1}', price)
 
-                yield url_work
+            yield url_work
 
 
 def array():
@@ -365,7 +365,7 @@ array()
 
 book.close()
 print("finish")
-# driver.close()
+
 
 
 
