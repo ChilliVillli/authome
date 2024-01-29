@@ -2,10 +2,10 @@ from time import sleep
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.webdriver.common.by import By
 from fake_useragent import UserAgent
 import xlsxwriter
 from googletrans import Translator
+from update import Row
 from update import get_url_update
 
 ua = UserAgent()
@@ -120,14 +120,15 @@ page.set_column("T:T", 15)
 page.write('V1', 'Цена')
 
 
-
 list_url = []
+
 
 def get_url():
 
 
-    for name in list_changcheng:
-        # sleep(3)
+    # for name in list_changcheng:
+    for name in get_url_update():
+    # name = Row.name
         print(name)
         d = {2014: count_two, 2015: count_two, 2016: count_two, 2017: count_two, 2018: count_two,
              2019: count_two, 2020: count_two, 2021: count_two, 2022: count_two, 2023: count_two, 2024: count_two}
@@ -138,8 +139,7 @@ def get_url():
         url_cars = f'https://www.che168.com/china/changan/{name}/a0_0msdgscncgpi1ltocsp1exx0/'
         driver = webdriver.Chrome()
         driver.get(url_cars)
-        sleep(2)
-        # response = requests.Session().get(url_cars, headers=headers)
+        sleep(2) # response = requests.Session().get(url_cars, headers=headers)
         soup = BeautifulSoup(driver.page_source, 'lxml')
         auto = soup.find_all('li', class_='cards-li list-photo-li')
 
@@ -173,6 +173,7 @@ def get_url():
 
             page.write(f'S{row + 1}', url_work)
             page.write(f'A{row + 1}', 'Livan')
+            """Сюда попробовать вставить проверку, если отсутсвует бренд в название авто"""
             page.write(f'B{row + 1}', translator.translate(carname, dest='en').text)
             page.write(f'V{row + 1}', price)
 
@@ -353,12 +354,6 @@ def array():
 
     driver_car.close()
     driver_car.quit()
-
-        # if row == 12:
-        #     # book.close()
-        #     print("end")
-        #     # count = 0
-        #     break
 
 
 array()
