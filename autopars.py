@@ -67,10 +67,6 @@ translator = Translator()
 # list_ruilanqiche = ['ruilanqichex3pro', 'fengye80v', 'fengye30x', 'fengye60s']
 
 
-list_changcheng = ['changanlumin', 'ruichengcc'] #, 'yuexiang', 'yidong', 'changanuniv', 'changanunivzhidianidd', 'ruichengcc', 'ruichengplus']
-
-
-
 # book = xlsxwriter.Workbook(r"C:\Users\Boris\Desktop\autohome\auto_copy.xlsx")
 # page = book.add_worksheet('changan')
 
@@ -78,8 +74,7 @@ book_update = openpyxl.load_workbook("auto_copy.xlsx")
 sheet = book_update.active
 
 
-brand_url = 'hafu'
-brand = 'Haval'
+brand = 'changan'
 row = 1
 column = 2
 count_two = 0
@@ -126,66 +121,63 @@ count_two = 0
 # page.write('V1', 'Цена')
 # page.write('W1', 'Поиск')
 
-
 list_url = []
 
 
 def get_url():
     global row
 
-    while sheet[f"S{row+1}"].value != None:
-        pr = row
-        name = sheet[f"W{row + 1}"].value
-        url = sheet[f"S{row+1}"].value
+    while sheet[f"C{row+1}"].value == None:
 
-        driver_update = webdriver.Chrome()
-        driver_update.get(url)
-        soup_update = BeautifulSoup(driver_update.page_source, 'lxml')
+        pr = row
+
+        if sheet[f"B{row + 1}"].value != None:
+            list_url.append(sheet[f"S{row + 1}"].value)
+            row += 1
+            continue
+
+        if sheet[f"B{row+1}"].value == None:
+            name = sheet[f"W{row + 1}"].value
+
+        # url = sheet[f"S{row+1}"].value
+        #
+        # driver_update = webdriver.Chrome()
+        # driver_update.get(url)
+        # soup_update = BeautifulSoup(driver_update.page_source, 'lxml')
         # tr = soup_update.find('div', class_='wrong_page').find('p').text.strip()
         # er = soup_update.find('div', class_='fail-title').text.strip()
 
-        try:
-            focus = soup_update.find('div', class_='tp-img-file pc-slide foucs-img-file').get('id')
-            if focus == 'focus-1':
-                row += 1
-                list_url.append(url)
-                continue
-        except AttributeError:
-
-        # if soup_update.find('div', class_='wrong_page').find('p').text.strip() != '非常抱歉，您访问的车辆信息不存在！'
-        #    soup_update.find('div', class_='fail-title').text.strip() != '加载失败':
-        #     row += 1
-        #     continue
+        # try:
+        #     if sheet[f"C{row+1}"].value not in list_url:
+        #         list_url.append(sheet[f"C{row + 1}"].value)
+        #         row += 1
+        #         continue
+        # except AttributeError:
 
 
     # for name in list_changcheng:
 
-            print(name)
-            d = {2014: count_two, 2015: count_two, 2016: count_two, 2017: count_two, 2018: count_two,
-                 2019: count_two, 2020: count_two, 2021: count_two, 2022: count_two, 2023: count_two, 2024: count_two}
+        # print(name)
+
+            d = {2017: count_two, 2018: count_two, 2019: count_two, 2020: count_two,
+                 2021: count_two, 2022: count_two, 2023: count_two, 2024: count_two}
 
             # for num in range(1, 2):
 
             # url_cars = f'https://www.che168.com/china/a0_0msdgscncgpi1ltocsp{num}exx0/?kw=wey'
-            url_cars = f'https://www.che168.com/china/{brand_url}/{name}/a0_0msdgscncgpi1ltocsp1exx0/'
+            url_cars = f'https://www.che168.com/china/{brand}/{name}/a0_0msdgscncgpi1ltocsp1exx0/'
             driver = webdriver.Chrome()
             driver.get(url_cars)
             soup = BeautifulSoup(driver.page_source, 'lxml')
-            sleep(2) # response = requests.Session().get(url_cars, headers=headers)
+            sleep(2)
             auto = soup.find_all('li', class_='cards-li list-photo-li')
 
+            for card in auto:
 
-            if auto == []:
-                driver.get(url_cars)
-                soup = BeautifulSoup(driver.page_source, 'lxml')
-                sleep(2) # response = requests.Session().get(url_cars, headers=headers)
-                auto = soup.find_all('li', class_='cards-li list-photo-li')
+                if pr != row:
+                    break
 
-            if auto != []:
-
-                for card in auto:
-                    if pr != row:
-                        break
+                else:
 
                     try:
                         dealerid = card['dealerid']
@@ -201,14 +193,14 @@ def get_url():
 
                     url_work = f'https://www.che168.com/dealer/{dealerid}/{infoid}.html'
 
-                    if year < 2014:
+                    if year < 2017:
                         continue
 
-                    else:
-                        d[year] += 1
-
-                    if d[year] >= 3:
-                        continue
+                    # else:
+                    #     d[year] += 1
+                    #
+                    # if d[year] >= 3:
+                    #     continue
 
                     if url_work in list_url:
                         continue
@@ -226,6 +218,7 @@ def get_url():
                         sheet[f'B{row + 1}'] = model
                     # page.write(f'V{row + 1}', price)
                     sheet[f'V{row + 1}'] = price
+
                     yield url_work
 
 
@@ -249,6 +242,7 @@ def array():
             pr = provider[0].text
             # page.write(f'P{row + 1}', pr.replace('                        ', ''))
             sheet[f'P{row + 1}'] = pr.replace('                        ', '')
+
         except AttributeError:
             continue
 
@@ -363,9 +357,13 @@ def array():
                     if len(a) == 1:
                         # page.write(f"I{row}", a[0])
                         sheet[f"I{row}"] = a[0]
+                        column += 1
+                        continue
                     if len(a) > 1:
                         # page.write(f"I{row}", a[2])
                         sheet[f"I{row}"] = a[2]
+                        column += 1
+                        continue
                     else:
                         sheet[f"I{row}"] = a
                     column += 1
@@ -436,6 +434,8 @@ def array():
                     continue
 
 
+            # if sheet[f"C{row+1}"].value == None:
+            #     break
 
     driver_car.close()
     driver_car.quit()
