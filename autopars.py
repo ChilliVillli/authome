@@ -25,7 +25,7 @@ count_two = 0
 # d = {2017: count_two, 2018: count_two, 2019: count_two, 2020: count_two,
 #      2021: count_two, 2022: count_two, 2023: count_two, 2024: count_two}
 
-names_brend = {'Acura': 'ouge', 'Avatr': 'aweita', 'BAIC': 'beijing', 'Changan': 'changan', 'Chery': 'qirui',
+names_brend = {'Acura': 'ouge', 'Avatr': 'aweita', 'BAIC': 'beijing', 'Changan': 'changan', 'Chery': 'qirui', 'BAIC_HUS': 'beiqihuansu',
                'Dongfeng': 'dongfeng', 'Exeed': 'xingtu', 'FAW': 'yiqi', 'GAC TRUMPCHI': 'guangqichuanqi',
                'Geely': 'jiliqiche', 'Geely Galaxy': 'jiliyinhe', 'Great Wall': 'changcheng', 'Haval': 'hafu',
                'JAC': 'jiangqijituan', 'Jetour': 'jietu', 'JMC': 'jiangling', 'Kaiyi': 'kaiyi', 'Li': 'lixiangqiche',
@@ -42,6 +42,7 @@ def get_url():
     while ll != None:
 
         pr = row
+        count = 0
 
         if sheet[f"B{row + 1}"].value != None:
             row += 1
@@ -52,15 +53,10 @@ def get_url():
             if name == None:
                 row += 1
                 continue
-                # break
+
             if name == 'all':
                 break
-            #
-            # if sheet[f"W{row + 1}"].value == None and sheet[f"A{row + 1}"].value == None:  # ЕСЛИ НЕТУ name
-            #     break
 
-
-            # brand = sheet[f"A{row + 1}"].value
 
             brand = names_brend[sheet[f"A{row + 1}"].value]
             url_cars = f'https://www.che168.com/china/{brand}/{name}/a0_0msdgscncgpi1ltocsp1exx0/'
@@ -69,14 +65,25 @@ def get_url():
             driver = webdriver.Chrome(options=chrome_options)
             driver.get(url_cars)
             soup = BeautifulSoup(driver.page_source, 'lxml')
-            auto = soup.find_all('li', class_='cards-li list-photo-li')
+
+            try:
+                auto = soup.find_all('li', class_='cards-li list-photo-li')
+                auto += soup.find_all('li', class_='cards-li list-photo-li cxc-card')
+            except Exception:
+
+                print(f'Error{brand} {name} {sheet[f"B{row}"].value}')
+
             driver.close()
 
             for card in auto:
-
+                count += 1
                 book_update.save('auto_copy.xlsx')
 
                 if pr != row:
+                    break
+
+                if len(auto) == count:
+                    row += 1
                     break
 
                 else:
@@ -100,8 +107,6 @@ def get_url():
                     if url_work in list_url:
                         continue
 
-                    # carname = carname.split()
-                    # carname = carname[0]
 
                     sheet[f'X{row + 1}'] = carname
                     number_to_remove = ['2017款', '2018款', '2019款', '2020款', '2021款', '2022款', '2023款', '2024款']
@@ -112,7 +117,6 @@ def get_url():
 
                     sheet[f'D{row + 1}'] = year
                     sheet[f'S{row + 1}'] = url_work
-                    # sheet[f'A{row + 1}'] = brand.title()
 
                     model = translator.translate(carname, dest='en').text
                     if sheet[f"A{row + 1}"].value not in model:
@@ -172,12 +176,6 @@ def array():
 
                 try:
 
-                    # if '上牌时间' in a:
-                    #     """Год выпуска"""
-                    #     a = a.replace('上牌时间', '')
-                    #     sheet[f'D{row}'] = a[0:4]
-                    #     column += 1
-                    #     continue
                     if '表显里程' in a:
                         """Пробег"""
                         a = a.replace('表显里程', '')
@@ -318,7 +316,6 @@ def array():
 array()
 book_update.save('auto_copy.xlsx')
 book_update.close()
-# book.close()
 
 print("finish")
 
