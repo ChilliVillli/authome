@@ -1,3 +1,4 @@
+import random
 from time import sleep
 import openpyxl
 from bs4 import BeautifulSoup
@@ -5,13 +6,16 @@ from selenium import webdriver
 from fake_useragent import UserAgent
 from googletrans import Translator
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+
 
 
 ua = UserAgent()
 headers = {'User-agent': ua.random}
 translator = Translator()
 chrome_options = Options()
-chrome_options.add_argument("--window-size=150,150")
+chrome_options.add_argument("--window-size=950,950")
+chrome_options.add_argument("--disable-notifications")
 
 
 book_update = openpyxl.load_workbook("auto_copy.xlsx")
@@ -22,8 +26,6 @@ row = 1
 column = 2
 count_two = 0
 
-# d = {2017: count_two, 2018: count_two, 2019: count_two, 2020: count_two,
-#      2021: count_two, 2022: count_two, 2023: count_two, 2024: count_two}
 
 names_brend = {'Acura': 'ouge', 'Avatr': 'aweita', 'BAIC': 'beijing', 'Changan': 'changan', 'Chery': 'qirui', 'BAIC_HUS': 'beiqihuansu',
                'Dongfeng': 'dongfeng', 'Exeed': 'xingtu', 'FAW': 'yiqi', 'GAC TRUMPCHI': 'guangqichuanqi',
@@ -67,8 +69,10 @@ def get_url():
             soup = BeautifulSoup(driver.page_source, 'lxml')
 
             try:
-                auto = soup.find_all('li', class_='cards-li list-photo-li')
-                auto += soup.find_all('li', class_='cards-li list-photo-li cxc-card')
+
+                auto = soup.find_all('li', class_='cards-li list-photo-li cxc-card')
+                auto += soup.find_all('li', class_='cards-li list-photo-li')
+
             except Exception:
 
                 print(f'Error{brand} {name} {sheet[f"B{row}"].value}')
@@ -107,13 +111,11 @@ def get_url():
                     if url_work in list_url:
                         continue
 
-
                     sheet[f'X{row + 1}'] = carname
                     number_to_remove = ['2017款', '2018款', '2019款', '2020款', '2021款', '2022款', '2023款', '2024款']
 
                     for symbol in number_to_remove:
                         carname = carname.replace(symbol, "")
-
 
                     sheet[f'D{row + 1}'] = year
                     sheet[f'S{row + 1}'] = url_work
@@ -137,7 +139,20 @@ def array():
         b = ''
         driver_car = webdriver.Chrome(options=chrome_options)
         driver_car.get(url_work)
+        sleep(1)
+
+        try:
+
+            driver_car.find_element(By.XPATH, '// *[ @ id = "pricedowndiv"] / i').click()
+            driver_car.find_element(By.ID, 'xphonerigger').click()
+            sleep(2)
+
+        except Exception:
+            continue
+
         card_soup = BeautifulSoup(driver_car.page_source, 'lxml')
+        num_phone = driver_car.find_element(By.ID, 'xphonerigger').text
+        sheet[f'Y{row + 1}'] = f"(+86){num_phone}"
 
         try:
             photo_soup = BeautifulSoup(driver_car.page_source, 'lxml')
